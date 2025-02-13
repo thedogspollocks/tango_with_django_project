@@ -29,7 +29,6 @@ def index(request):
     context_dict['categories'] = category_list
     context_dict['pages'] = page_list
     visitor_cookie_handler(request)
-    context_dict['visits'] = request.session['visits']
     response = render(request, 'rango/index.html', context=context_dict)
     return response
 
@@ -41,7 +40,10 @@ def about(request):
     print(request.method)
     # prints out the user name, if no one is logged in it prints `AnonymousUser`
     print(request.user)
-    return render(request, 'rango/about.html', {})
+    visitor_cookie_handler(request)
+    context_dict={}
+    context_dict['visits'] = request.session['visits']
+    return render(request, 'rango/about.html', context_dict)
 
 def show_category(request, category_name_slug):
     # Create a context dictionary which we can pass
@@ -244,6 +246,7 @@ def get_server_side_cookie(request, cookie, default_val=None):
     if not val:
         val = default_val
     return val
+
 # Updated the function definition
 def visitor_cookie_handler(request):
     visits = int(get_server_side_cookie(request, 'visits', '1'))
